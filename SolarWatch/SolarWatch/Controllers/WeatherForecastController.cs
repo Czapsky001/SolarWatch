@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using SolarWatch.Models;
+using SolarWatch.Services;
 
 namespace SolarWatch.Controllers
 {
@@ -6,28 +8,30 @@ namespace SolarWatch.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IWeatherService _weatherService;
+        private readonly IDbService _dbService;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IWeatherService weatherService, IDbService dbService)
         {
             _logger = logger;
+            _weatherService = weatherService;
+            _dbService = dbService;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpGet(Name = "SunriseAndSunset")]
+        public async Task<ActionResult<SunriseAndSunset>> GetSunriseAndSunset(string city)
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            if(!await _dbService.IsExist(city))
             {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+                var cityFromApi = await _weatherService.GetCityFromApi(city);
+                _dbService.AddCity(cityFromApi);
+                return 
+            }
+            return await _dbService.GetSunriseAndSunsetFromDatabase(city);
+
+
         }
     }
 }
