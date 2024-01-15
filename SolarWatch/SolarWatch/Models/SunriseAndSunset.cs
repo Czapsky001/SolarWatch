@@ -1,4 +1,6 @@
-﻿namespace SolarWatch.Models
+﻿using System.Text.Json.Serialization;
+
+namespace SolarWatch.Models
 {
     public class SunriseAndSunset
     {
@@ -7,6 +9,7 @@
         public DateTime Sunrise { get; set; }
         public DateTime Sunset { get; set; }
 
+        [JsonIgnore]
         public City City { get; set; }
         public SunriseAndSunset(DateTime sunrise, DateTime sunset)
         {

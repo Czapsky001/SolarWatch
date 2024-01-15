@@ -20,15 +20,30 @@ namespace SolarWatch.Services
         {
             try
             {
-                return await _dbContext.Cities.AnyAsync(e => e.Name == city);
+                var cityInDatabase = await _dbContext.Cities.Include(c => c.SunriseAndSunset).AnyAsync(e => e.Name == city);
+
+                if(cityInDatabase)
+                {
+                    var cityEntity = await _dbContext.Cities.Include(c => c.SunriseAndSunset).FirstOrDefaultAsync(e => e.Name == city);
+                    if(cityEntity.SunriseAndSunset == null)
+                    {
+                        return false;
+                    }
+
+                    DateTime sunriseData = cityEntity.SunriseAndSunset.Sunrise;
+
+                    bool isSameDay = sunriseData.Day == DateTime.Now.Day;
+
+                    return isSameDay;
+                }
+
+                return cityInDatabase;
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.Message);
                 return false;
-
             }
-
         }
         public async Task<bool> AddCity(City city)
         {
@@ -49,7 +64,7 @@ namespace SolarWatch.Services
         public async Task<SunriseAndSunset> GetSunriseAndSunsetFromDatabase(string city)
         {
             var data = await _dbContext.Cities.FirstOrDefaultAsync(e => e.Name == city);
-            throw new NotImplementedException();
+            return data.SunriseAndSunset;
         }
     }
 }

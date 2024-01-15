@@ -21,17 +21,18 @@ namespace SolarWatch.Controllers
         }
 
         [HttpGet(Name = "SunriseAndSunset")]
-        public async Task<ActionResult<SunriseAndSunset>> GetSunriseAndSunset(string city)
+        public async Task<ActionResult<SunriseAndSunset>> GetSunriseAndSunset(string cityName)
         {
-            if(!await _dbService.IsExist(city))
+            if (!await _dbService.IsExist(cityName))
             {
-                var cityFromApi = await _weatherService.GetCityFromApi(city);
-                _dbService.AddCity(cityFromApi);
-                return 
+                var cityFromApi = await _weatherService.GetCity(cityName);
+                await _dbService.AddCity(cityFromApi);
+
+                var sunrise = cityFromApi.SunriseAndSunset.Sunrise;
+                var sunset = cityFromApi.SunriseAndSunset.Sunset;
+                return new SunriseAndSunset(sunrise, sunset);
             }
-            return await _dbService.GetSunriseAndSunsetFromDatabase(city);
-
-
+            return await _dbService.GetSunriseAndSunsetFromDatabase(cityName);
         }
     }
 }

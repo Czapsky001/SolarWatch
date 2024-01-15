@@ -1,4 +1,6 @@
 ﻿
+using SolarWatch.Models;
+
 namespace SolarWatch.ApiConnect
 {
     public class WebClient : IWebClient
