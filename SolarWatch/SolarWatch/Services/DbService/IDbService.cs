@@ -1,6 +1,6 @@
 ﻿using SolarWatch.Models;
 
-namespace SolarWatch.Services
+namespace SolarWatch.Services.DbService
 {
     public interface IDbService
     {

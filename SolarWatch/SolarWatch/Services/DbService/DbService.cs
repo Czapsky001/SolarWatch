@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using SolarWatch.DatabaseConnector;
 using SolarWatch.Models;
 
-namespace SolarWatch.Services
+namespace SolarWatch.Services.DbService
 {
     public class DbService : IDbService
     {
@@ -22,10 +22,10 @@ namespace SolarWatch.Services
             {
                 var cityInDatabase = await _dbContext.Cities.Include(c => c.SunriseAndSunset).AnyAsync(e => e.Name == city);
 
-                if(cityInDatabase)
+                if (cityInDatabase)
                 {
                     var cityEntity = await _dbContext.Cities.Include(c => c.SunriseAndSunset).FirstOrDefaultAsync(e => e.Name == city);
-                    if(cityEntity.SunriseAndSunset == null)
+                    if (cityEntity.SunriseAndSunset == null)
                     {
                         return false;
                     }
@@ -47,10 +47,32 @@ namespace SolarWatch.Services
         }
         public async Task<bool> AddCity(City city)
         {
-            await _dbContext.Cities.AddAsync(city);
-            await _dbContext.SaveChangesAsync();
-            return true;
+            try
+            {
+                var existingCity = await _dbContext.Cities
+                    .Include(c => c.SunriseAndSunset)
+                    .FirstOrDefaultAsync(e => e.Name == city.Name);
+
+                if (existingCity != null)
+                {
+                    existingCity.SunriseAndSunset = city.SunriseAndSunset;
+                    await _dbContext.SaveChangesAsync();
+                }
+                else
+                {
+                    await _dbContext.Cities.AddAsync(city);
+                    await _dbContext.SaveChangesAsync();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message);
+                return false;
+            }
         }
+
 
 
 

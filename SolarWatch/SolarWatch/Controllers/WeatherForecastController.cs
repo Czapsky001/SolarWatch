@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarWatch.Models;
-using SolarWatch.Services;
+using SolarWatch.Services.DbService;
+using SolarWatch.Services.WeatherService;
 
 namespace SolarWatch.Controllers
 {
@@ -20,7 +22,7 @@ namespace SolarWatch.Controllers
             _dbService = dbService;
         }
 
-        [HttpGet(Name = "SunriseAndSunset")]
+        [HttpGet(Name = "SunriseAndSunset"), Authorize]
         public async Task<ActionResult<SunriseAndSunset>> GetSunriseAndSunset(string cityName)
         {
             if (!await _dbService.IsExist(cityName))

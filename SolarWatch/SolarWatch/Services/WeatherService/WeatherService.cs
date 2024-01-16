@@ -2,7 +2,7 @@
 using SolarWatch.Models;
 using System.Text.Json;
 
-namespace SolarWatch.Services
+namespace SolarWatch.Services.WeatherService
 {
     public class WeatherService : IWeatherService
     {
