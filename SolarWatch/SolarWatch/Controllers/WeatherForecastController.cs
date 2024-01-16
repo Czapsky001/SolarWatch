@@ -23,7 +23,7 @@ namespace SolarWatch.Controllers
         }
 
         [HttpGet(Name = "SunriseAndSunset"), Authorize]
-        public async Task<ActionResult<SunriseAndSunset>> GetSunriseAndSunset(string cityName)
+        public async Task<ActionResult<SunriseAndSunsetDTO>> GetSunriseAndSunset(string cityName)
         {
             if (!await _dbService.IsExist(cityName))
             {
@@ -32,7 +32,7 @@ namespace SolarWatch.Controllers
 
                 var sunrise = cityFromApi.SunriseAndSunset.Sunrise;
                 var sunset = cityFromApi.SunriseAndSunset.Sunset;
-                return new SunriseAndSunset(sunrise, sunset);
+                return new SunriseAndSunsetDTO(sunrise, sunset);
             }
             return await _dbService.GetSunriseAndSunsetFromDatabase(cityName);
         }

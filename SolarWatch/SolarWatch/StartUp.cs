@@ -75,7 +75,6 @@ public class StartUp
         })
             .AddEntityFrameworkStores<UserContext>();
         var configuration = config.GetSection("Authentication");
-        var x = configuration["ValidAudience"];
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {

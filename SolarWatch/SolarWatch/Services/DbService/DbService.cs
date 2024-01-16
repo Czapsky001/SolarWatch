@@ -83,10 +83,10 @@ namespace SolarWatch.Services.DbService
             return true;
         }
 
-        public async Task<SunriseAndSunset> GetSunriseAndSunsetFromDatabase(string city)
+        public async Task<SunriseAndSunsetDTO> GetSunriseAndSunsetFromDatabase(string city)
         {
             var data = await _dbContext.Cities.FirstOrDefaultAsync(e => e.Name == city);
-            return data.SunriseAndSunset;
+            return new SunriseAndSunsetDTO(data.SunriseAndSunset.Sunrise, data.SunriseAndSunset.Sunset);
         }
     }
 }
